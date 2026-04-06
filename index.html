@@ -3,51 +3,174 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Scavenger Hunt Checkpoints</title>
+<title>Scavenger Hunt</title>
 
 <style>
-body { font-family: Arial; background:#f7f7fb; text-align:center; }
-.card { background:white; margin:20px auto; padding:20px; border-radius:16px; max-width:600px; }
-button { padding:12px 16px; border:none; border-radius:10px; margin:5px; cursor:pointer; }
-.start { background:#4f46e5; color:white; }
-.secondary { background:#6b7280; color:white; }
-.success { background:#16a34a; color:white; }
-.danger { background:#b91c1c; color:white; }
-.status { margin-top:10px; padding:10px; border-radius:10px; }
-.grid { display:grid; grid-template-columns: repeat(4,1fr); gap:10px; margin-top:10px; }
-.box { padding:10px; border-radius:10px; background:#ddd; }
-.found { background:#86efac; }
+body {
+  font-family: Arial, sans-serif;
+  background: #f7f7fb;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+.card {
+  background: white;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 16px;
+  max-width: 650px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+button {
+  padding: 12px 16px;
+  border: none;
+  border-radius: 10px;
+  margin: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.start { background: #4f46e5; color: white; }
+.secondary { background: #6b7280; color: white; }
+.success { background: #16a34a; color: white; }
+.danger { background: #b91c1c; color: white; }
+
+.status {
+  margin-top: 12px;
+  padding: 10px;
+  border-radius: 10px;
+  min-height: 24px;
+  font-weight: bold;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.box {
+  padding: 10px;
+  border-radius: 10px;
+  background: #ddd;
+  font-weight: bold;
+}
+
+.found {
+  background: #86efac;
+}
+
+.instructions {
+  text-align: left;
+  max-width: 500px;
+  margin: 16px auto;
+  line-height: 1.5;
+}
+
+.instructions li {
+  margin-bottom: 8px;
+}
+
+.notice {
+  background: #eef2ff;
+  color: #3730a3;
+  padding: 12px;
+  border-radius: 12px;
+  margin-top: 14px;
+}
+
+.warning {
+  background: #fff7ed;
+  color: #9a3412;
+  padding: 14px;
+  border-radius: 12px;
+  margin-top: 14px;
+  font-weight: bold;
+}
+
+.big-finish {
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.code-box {
+  margin: 18px auto 10px;
+  padding: 14px 18px;
+  max-width: 320px;
+  border: 2px dashed #a16207;
+  border-radius: 16px;
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 1px;
+  background: #fefce8;
+  color: #854d0e;
+}
 </style>
 </head>
 
 <body>
 
 <div class="card" id="startScreen">
-<h1>📍 Scavenger Hunt</h1>
+  <h1>📍 Scavenger Hunt</h1>
+  <p>Find checkpoint QR codes and claim them in any order.</p>
 
-<button class="start" onclick="start()">Start Hunt</button>
-<button class="danger" onclick="reset()">Reset Progress</button>
+  <div class="instructions">
+    <strong>How to Play:</strong>
+    <ul>
+      <li>Scan the main game QR code to open the hunt.</li>
+      <li>Walk around and find checkpoint QR codes.</li>
+      <li>Each checkpoint QR loads a checkpoint number automatically.</li>
+      <li>Tap <strong>Claim Checkpoint</strong> to record it.</li>
+      <li>Each checkpoint only counts once on the same device.</li>
+      <li>When all 12 are found, show the completion screen to staff.</li>
+    </ul>
+  </div>
 
-<p>Progress stays on this device for 24 hours.</p>
+  <button class="start" onclick="start()">Start Hunt</button>
+  <button class="danger" onclick="reset()">Reset Progress</button>
+
+  <div class="notice">
+    Progress stays on this device for 24 hours unless you reset it sooner.
+  </div>
 </div>
 
 <div class="card" id="huntScreen" style="display:none;">
-<h2 id="progress">0 of 12 found</h2>
+  <h2 id="progress">0 of 12 found</h2>
 
-<p id="checkpointText">Scan a QR code</p>
+  <p id="checkpointText">Scan a checkpoint QR code</p>
 
-<button class="success" onclick="claim()">Claim Checkpoint</button>
-<button class="secondary" onclick="home()">Return</button>
+  <div class="notice">
+    Find a checkpoint QR, scan it, then tap <strong>Claim Checkpoint</strong>.
+  </div>
 
-<div id="status" class="status"></div>
+  <button class="success" onclick="claim()">Claim Checkpoint</button>
+  <button class="secondary" onclick="home()">Return to Start</button>
 
-<div id="grid" class="grid"></div>
+  <div id="status" class="status"></div>
+
+  <div id="grid" class="grid"></div>
 </div>
 
 <div class="card" id="doneScreen" style="display:none;">
-<h2>🎉 Complete</h2>
-<p>Show this screen</p>
-<button onclick="reset()">Play Again</button>
+  <div class="big-finish">🎉 Hunt Complete</div>
+  <p>You found all 12 checkpoints.</p>
+
+  <div class="code-box">COMPLETE</div>
+
+  <div class="notice">
+    Please show this screen to staff so they can confirm you finished.
+  </div>
+
+  <div class="warning">
+    Do not tap reset until staff has seen this screen.
+  </div>
+
+  <button class="secondary" onclick="home()">Return to Start</button>
+  <button class="danger" onclick="reset()">Reset Progress</button>
 </div>
 
 <script>
@@ -59,8 +182,8 @@ let found = [];
 let current = null;
 
 function load() {
-  let exp = localStorage.getItem(EXP);
-  if (!exp || Date.now() > exp) {
+  const exp = localStorage.getItem(EXP);
+  if (!exp || Date.now() > Number(exp)) {
     localStorage.removeItem(KEY);
     localStorage.removeItem(EXP);
     return [];
@@ -70,12 +193,13 @@ function load() {
 
 function save() {
   localStorage.setItem(KEY, JSON.stringify(found));
-  localStorage.setItem(EXP, Date.now() + 24*60*60*1000);
+  localStorage.setItem(EXP, String(Date.now() + 24 * 60 * 60 * 1000));
 }
 
 function reset() {
-  if (!confirm("Reset progress?")) return;
-  localStorage.clear();
+  if (!confirm("Reset progress on this device?")) return;
+  localStorage.removeItem(KEY);
+  localStorage.removeItem(EXP);
   found = [];
   render();
   home();
@@ -91,10 +215,10 @@ function home() {
 }
 
 function show(id) {
-  document.getElementById("startScreen").style.display="none";
-  document.getElementById("huntScreen").style.display="none";
-  document.getElementById("doneScreen").style.display="none";
-  document.getElementById(id).style.display="block";
+  document.getElementById("startScreen").style.display = "none";
+  document.getElementById("huntScreen").style.display = "none";
+  document.getElementById("doneScreen").style.display = "none";
+  document.getElementById(id).style.display = "block";
 }
 
 function read() {
@@ -106,26 +230,27 @@ function read() {
     document.getElementById("checkpointText").innerText = "Checkpoint " + c + " loaded";
   } else {
     current = null;
+    document.getElementById("checkpointText").innerText = "Scan a checkpoint QR code";
   }
 }
 
 function claim() {
   if (!current) {
-    set("Scan a checkpoint first", "red");
+    setStatus("Scan a checkpoint first", "#b91c1c");
     return;
   }
 
   if (found.includes(current)) {
-    set("Already found", "red");
+    setStatus("Checkpoint " + current + " was already found", "#b91c1c");
     return;
   }
 
   found.push(current);
   save();
   render();
-  set("Checkpoint added", "green");
+  setStatus("Checkpoint " + current + " added", "#166534");
 
-  if (found.length == TOTAL) {
+  if (found.length === TOTAL) {
     show("doneScreen");
   }
 }
@@ -134,20 +259,20 @@ function render() {
   document.getElementById("progress").innerText =
     found.length + " of " + TOTAL + " found";
 
-  let grid = document.getElementById("grid");
+  const grid = document.getElementById("grid");
   grid.innerHTML = "";
 
-  for (let i=1;i<=TOTAL;i++) {
-    let d = document.createElement("div");
+  for (let i = 1; i <= TOTAL; i++) {
+    const d = document.createElement("div");
     d.className = "box";
     if (found.includes(String(i))) d.classList.add("found");
-    d.innerText = i;
+    d.innerText = found.includes(String(i)) ? "✓ " + i : i;
     grid.appendChild(d);
   }
 }
 
-function set(text,color) {
-  let el = document.getElementById("status");
+function setStatus(text, color) {
+  const el = document.getElementById("status");
   el.innerText = text;
   el.style.color = color;
 }
