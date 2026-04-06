@@ -280,6 +280,36 @@ function setStatus(text, color) {
 found = load();
 render();
 </script>
+  
+<div class="card" id="doneScreen" style="display:none;">
 
+  <div style="font-size:28px; font-weight:bold; margin-bottom:10px;">
+    🏆 WINNER VERIFIED
+  </div>
+
+  <p style="font-size:18px;">
+    You completed all 12 checkpoints.
+  </p>
+
+  <div class="code-box">QUEST-12</div>
+
+  <div class="notice">
+    📸 <strong>Take a screenshot of this screen</strong><br>
+    This is your proof of completion.
+  </div>
+
+  <div class="notice">
+    🎁 Show your screenshot to staff to claim your reward.
+  </div>
+
+  <div class="warning">
+    ⚠️ Do not reset until staff has seen your screen.
+  </div>
+
+  <button class="secondary" onclick="home()">Return to Start</button>
+  <button class="danger" onclick="reset()">Reset Progress</button>
+
+</div>
+  
 </body>
 </html>
