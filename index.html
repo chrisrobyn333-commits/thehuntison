@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pokémon Snap Egg Hunt</title>
+  <style>
+    :root {
+      --bg: #f7f7fb;
+      --card: #ffffff;
+      --text: #222;
+      --muted: #666;
+      --accent: #4f46e5;
+      --accent-2: #16a34a;
+      --danger: #b91c1c;
+      --border: #ddd;
+      --gold: #a16207;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.4;
+    }
+
+    .wrap {
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+      margin-bottom: 16px;
+    }
+
+    h1, h2, h3 {
+      margin-top: 0;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .center {
+      text-align: center;
+    }
+
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    button {
+      border: none;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-size: 16px;
+      cursor: pointer;
+      background: var(--accent);
+      color: white;
+    }
+
+    button.secondary {
+      background: #6b7280;
+    }
+
+    button.success {
+      background: var(--accent-2);
+    }
+
+    button.danger {
+      background: var(--danger);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    video {
+      width: 100%;
+      max-width: 420px;
+      border-radius: 16px;
+      background: #000;
+      display: block;
+      margin: 12px auto;
+    }
+
+    .snapshot {
+      width: 100%;
+      max-width: 360px;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      display: block;
+      margin: 12px auto;
+    }
+
+    .status {
+      padding: 10px 12px;
+      border-radius: 12px;
+      margin-top: 10px;
+      font-size: 15px;
+    }
+
+    .status.info {
+      background: #eef2ff;
+      color: #3730a3;
+    }
+
+    .status.good {
+      background: #ecfdf5;
+      color: #166534;
+    }
+
+    .status.bad {
+      background: #fef2f2;
+      color: var(--danger);
+    }
+
+    .small {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .progress-box {
+      display: inline-block;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #f3f4f6;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .code-box {
+      margin: 16px auto 10px;
+      padding: 14px 18px;
+      max-width: 320px;
+      border: 2px dashed var(--gold);
+      border-radius: 16px;
+      font-size: 24px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      background: #fefce8;
+      color: #854d0e;
+    }
+
+    .found-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .found-chip {
+      padding: 10px 8px;
+      border-radius: 12px;
+      text-align: center;
+      font-weight: bold;
+      background: #e5e7eb;
+      border: 1px solid #d1d5db;
+    }
+
+    .found-chip.found {
+      background: #dcfce7;
+      border-color: #86efac;
+      color: #166534;
+    }
+
+    .input-group {
+      margin-top: 16px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      max-width: 280px;
+      padding: 12px 14px;
+      font-size: 18px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      outline: none;
+    }
+
+    .rules-list {
+      text-align: left;
+      max-width: 520px;
+      margin: 14px auto 0;
+      color: var(--text);
+    }
+
+    .rules-list li {
+      margin-bottom: 8px;
+    }
+
+    .admin-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .admin-chip {
+      padding: 12px 8px;
+      border-radius: 12px;
+      text-align: center;
+      font-weight: bold;
+      background: #eef2ff;
+      border: 1px solid #c7d2fe;
+      color: #3730a3;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section id="screen-start" class="card center">
+      <h1>🥚 Pokémon Snap Egg Hunt</h1>
+      <p>Find eggs in any order. Open the egg, take a photo of the number inside, enter that number, close the egg, and put it back where you found it.</p>
+
+      <div class="button-row" style="justify-content:center;">
+        <button id="startBtn">▶ Start Hunt</button>
+        <button id="adminBtn" class="secondary">🔍 Admin Mode</button>
+      </div>
+
+      <ul class="rules-list">
+        <li>A photo is required before each number can be submitted.</li>
+        <li>Each egg number only counts once.</li>
+        <li>You can find the eggs in any order.</li>
+        <li>Replace the egg after you open it so others can play too.</li>
+      </ul>
+
+      <p class="small">This version requires a photo before submission, but it does not automatically inspect the contents of the photo.</p>
+    </section>
+
+    <section id="screen-hunt" class="card hidden center">
+      <div class="progress-box" id="progressText">0 of 12 found</div>
+      <h2>Find an Egg</h2>
+      <p>Take a photo of the number inside the egg, then enter that number below.</p>
+
+      <img id="lastPhotoPreview" class="snapshot hidden" alt="Last captured photo preview" />
+
+      <div class="button-row" style="justify-content:center;">
+        <button id="openCameraBtn">📷 Take Photo</button>
+      </div>
+
+      <div id="huntStatus" class="status info">No photo taken yet for this entry.</div>
+
+      <div class="input-group">
+        <input id="numberInput" type="text" inputmode="numeric" maxlength="2" placeholder="Enter egg number" />
+      </div>
+
+      <div class="button-row" style="justify-content:center;">
+        <button id="submitNumberBtn" class="success">Submit Number</button>
+        <button id="backToStartBtn" class="secondary">← Return to Start</button>
+      </div>
+
+      <h3>Numbers Found</h3>
+      <div id="foundGrid" class="found-grid"></div>
+    </section>
+
+    <section id="screen-camera" class="card hidden center">
+      <h2>Camera Checkpoint</h2>
+      <p>Point your camera at the number inside the egg, then take a photo.</p>
+      <video id="video" autoplay playsinline></video>
+      <canvas id="canvas" class="hidden"></canvas>
+      <img id="snapshot" class="snapshot hidden" alt="Captured photo preview" />
+
+      <div class="button-row" style="justify-content:center;">
+        <button id="snapBtn">📸 Take Photo</button>
+        <button id="retakeBtn" class="secondary hidden">Retake</button>
+        <button id="usePhotoBtn" class="success hidden">Use This Photo</button>
+      </div>
+
+      <div id="cameraStatus" class="status info">Waiting for camera permission.</div>
+
+      <div class="button-row" style="justify-content:center;">
+        <button id="cancelCameraBtn" class="secondary">Cancel</button>
+      </div>
+    </section>
+
+    <section id="screen-admin" class="card hidden center">
+      <h2>🔍 Admin Mode</h2>
+      <p>These are the valid egg numbers for this hunt.</p>
+      <div id="adminList" class="admin-list"></div>
+      <div id="adminStatus" class="status info">Admin review ready.</div>
+      <div class="button-row" style="justify-content:center;">
+        <button id="adminExitBtn" class="danger">Exit Admin Mode</button>
+      </div>
+    </section>
+
+    <section id="screen-success" class="card hidden center">
+      <h2>🎉 Hunt Complete</h2>
+      <p>You found all 12 egg numbers.</p>
+      <div id="completionCodeBox" class="code-box">Completion Code: GOLD-12</div>
+      <p>Show this screen to staff so they can confirm you finished.</p>
+      <img id="finalPhoto" class="snapshot hidden" alt="Final captured photo" />
+      <div class="button-row" style="justify-content:center;">
+        <button id="restartBtn">Play Again</button>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const totalEggs = 12;
+    const completionCode = 'GOLD-12';
+
+    // Change these if your eggs use different numbers or codes later.
+    const validEggNumbers = ['1','2','3','4','5','6','7','8','9','10','11','12'];
+
+    let stream = null;
+    let capturedDataUrl = '';
+    let foundNumbers = [];
+
+    const screens = {
+      start: document.getElementById('screen-start'),
+      hunt: document.getElementById('screen-hunt'),
+      camera: document.getElementById('screen-camera'),
+      admin: document.getElementById('screen-admin'),
+      success: document.getElementById('screen-success')
+    };
+
+    const startBtn = document.getElementById('startBtn');
+    const adminBtn = document.getElementById('adminBtn');
+    const openCameraBtn = document.getElementById('openCameraBtn');
+    const submitNumberBtn = document.getElementById('submitNumberBtn');
+    const backToStartBtn = document.getElementById('backToStartBtn');
+    const cancelCameraBtn = document.getElementById('cancelCameraBtn');
+    const snapBtn = document.getElementById('snapBtn');
+    const retakeBtn = document.getElementById('retakeBtn');
+    const usePhotoBtn = document.getElementById('usePhotoBtn');
+    const adminExitBtn = document.getElementById('adminExitBtn');
+    const restartBtn = document.getElementById('restartBtn');
+
+    const huntStatus = document.getElementById('huntStatus');
+    const cameraStatus = document.getElementById('cameraStatus');
+    const adminStatus = document.getElementById('adminStatus');
+
+    const progressText = document.getElementById('progressText');
+    const numberInput = document.getElementById('numberInput');
+    const foundGrid = document.getElementById('foundGrid');
+    const adminList = document.getElementById('adminList');
+    const completionCodeBox = document.getElementById('completionCodeBox');
+
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const snapshot = document.getElementById('snapshot');
+    const lastPhotoPreview = document.getElementById('lastPhotoPreview');
+    const finalPhoto = document.getElementById('finalPhoto');
+
+    function showScreen(name) {
+      Object.values(screens).forEach(screen => screen.classList.add('hidden'));
+      screens[name].classList.remove('hidden');
+    }
+
+    function setStatus(el, type, text) {
+      el.className = `status ${type}`;
+      el.textContent = text;
+    }
+
+    function normalizeInput(value) {
+      return value.trim();
+    }
+
+    function updateProgress() {
+      progressText.textContent = `${foundNumbers.length} of ${totalEggs} found`;
+      completionCodeBox.textContent = `Completion Code: ${completionCode}`;
+    }
+
+    function renderFoundGrid() {
+      foundGrid.innerHTML = '';
+
+      validEggNumbers.forEach(num => {
+        const chip = document.createElement('div');
+        chip.className = 'found-chip';
+        chip.textContent = num;
+
+        if (foundNumbers.includes(num)) {
+          chip.classList.add('found');
+          chip.textContent = `✓ ${num}`;
+        }
+
+        foundGrid.appendChild(chip);
+      });
+    }
+
+    function renderAdminList() {
+      adminList.innerHTML = '';
+
+      validEggNumbers.forEach(num => {
+        const chip = document.createElement('div');
+        chip.className = 'admin-chip';
+        chip.textContent = num;
+        adminList.appendChild(chip);
+      });
+    }
+
+    async function openCamera() {
+      try {
+        stopCamera();
+        capturedDataUrl = '';
+        snapshot.classList.add('hidden');
+        snapshot.src = '';
+        retakeBtn.classList.add('hidden');
+        usePhotoBtn.classList.add('hidden');
+        snapBtn.classList.remove('hidden');
+        video.classList.remove('hidden');
+
+        showScreen('camera');
+        setStatus(cameraStatus, 'info', 'Requesting camera access...');
+
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment' },
+          audio: false
+        });
+
+        video.srcObject = stream;
+        setStatus(cameraStatus, 'good', 'Camera is ready. Take a photo of the egg number.');
+      } catch (err) {
+        console.error(err);
+        setStatus(cameraStatus, 'bad', 'Camera access failed. Make sure you are on a phone browser and allow camera permission.');
+      }
+    }
+
+    function stopCamera() {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        stream = null;
+      }
+      video.srcObject = null;
+    }
+
+    function takePhoto() {
+      if (!video.videoWidth || !video.videoHeight) {
+        setStatus(cameraStatus, 'bad', 'Camera is not ready yet. Please wait a moment and try again.');
+        return;
+      }
+
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      capturedDataUrl = canvas.toDataURL('image/png');
+
+      snapshot.src = capturedDataUrl;
+      snapshot.classList.remove('hidden');
+      video.classList.add('hidden');
+      snapBtn.classList.add('hidden');
+      retakeBtn.classList.remove('hidden');
+      usePhotoBtn.classList.remove('hidden');
+
+      setStatus(cameraStatus, 'good', 'Photo captured. Use it if you are happy with the result.');
+    }
+
+    function usePhoto() {
+      if (!capturedDataUrl) {
+        setStatus(cameraStatus, 'bad', 'Take a photo first.');
+        return;
+      }
+
+      stopCamera();
+      lastPhotoPreview.src = capturedDataUrl;
+      lastPhotoPreview.classList.remove('hidden');
+      setStatus(huntStatus, 'good', 'Photo accepted. Now enter the egg number you found.');
+      showScreen('hunt');
+    }
+
+    function submitNumber() {
+      const value = normalizeInput(numberInput.value);
+
+      if (!capturedDataUrl) {
+        setStatus(huntStatus, 'bad', 'Take a photo before submitting a number.');
+        return;
+      }
+
+      if (!value) {
+        setStatus(huntStatus, 'bad', 'Enter the number from inside the egg.');
+        return;
+      }
+
+      if (!validEggNumbers.includes(value)) {
+        setStatus(huntStatus, 'bad', 'That is not a valid egg number for this hunt.');
+        return;
+      }
+
+      if (foundNumbers.includes(value)) {
+        setStatus(huntStatus, 'bad', `Egg number ${value} was already found.`);
+        return;
+      }
+
+      foundNumbers.push(value);
+      foundNumbers.sort((a, b) => Number(a) - Number(b));
+
+      setStatus(huntStatus, 'good', `Egg number ${value} recorded. Keep going.`);
+      renderFoundGrid();
+      updateProgress();
+
+      finalPhoto.src = capturedDataUrl;
+
+      capturedDataUrl = '';
+      numberInput.value = '';
+      lastPhotoPreview.classList.add('hidden');
+      lastPhotoPreview.src = '';
+
+      if (foundNumbers.length >= totalEggs) {
+        finalPhoto.classList.remove('hidden');
+        showScreen('success');
+        return;
+      }
+    }
+
+    function resetApp() {
+      stopCamera();
+      capturedDataUrl = '';
+      foundNumbers = [];
+
+      snapshot.src = '';
+      snapshot.classList.add('hidden');
+      lastPhotoPreview.src = '';
+      lastPhotoPreview.classList.add('hidden');
+      finalPhoto.src = '';
+      finalPhoto.classList.add('hidden');
+
+      retakeBtn.classList.add('hidden');
+      usePhotoBtn.classList.add('hidden');
+      snapBtn.classList.remove('hidden');
+      video.classList.remove('hidden');
+
+      numberInput.value = '';
+
+      renderFoundGrid();
+      renderAdminList();
+      updateProgress();
+
+      setStatus(huntStatus, 'info', 'No photo taken yet for this entry.');
+      setStatus(cameraStatus, 'info', 'Waiting for camera permission.');
+      setStatus(adminStatus, 'info', 'Admin review ready.');
+
+      showScreen('start');
+    }
+
+    startBtn.addEventListener('click', () => {
+      setStatus(huntStatus, 'info', 'No photo taken yet for this entry.');
+      showScreen('hunt');
+    });
+
+    adminBtn.addEventListener('click', () => {
+      renderAdminList();
+      showScreen('admin');
+    });
+
+    openCameraBtn.addEventListener('click', openCamera);
+    submitNumberBtn.addEventListener('click', submitNumber);
+    backToStartBtn.addEventListener('click', () => showScreen('start'));
+
+    cancelCameraBtn.addEventListener('click', () => {
+      stopCamera();
+      showScreen('hunt');
+    });
+
+    snapBtn.addEventListener('click', takePhoto);
+    retakeBtn.addEventListener('click', openCamera);
+    usePhotoBtn.addEventListener('click', usePhoto);
+
+    adminExitBtn.addEventListener('click', () => showScreen('start'));
+    restartBtn.addEventListener('click', resetApp);
+
+    numberInput.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        submitNumber();
+      }
+    });
+
+    renderFoundGrid();
+    renderAdminList();
+    updateProgress();
+  </script>
+</body>
+</html>
