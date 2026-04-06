@@ -1,314 +1,350 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Scavenger Hunt</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Scavenger Hunt</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f7fb;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      color: #222;
+    }
 
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f7f7fb;
-  text-align: center;
-  margin: 0;
-  padding: 0;
-}
+    .card {
+      background: white;
+      margin: 20px auto;
+      padding: 24px 20px;
+      border-radius: 18px;
+      max-width: 680px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
 
-.card {
-  background: white;
-  margin: 20px auto;
-  padding: 20px;
-  border-radius: 16px;
-  max-width: 650px;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-}
+    button {
+      padding: 12px 16px;
+      border: none;
+      border-radius: 12px;
+      margin: 6px;
+      cursor: pointer;
+      font-size: 16px;
+    }
 
-button {
-  padding: 12px 16px;
-  border: none;
-  border-radius: 10px;
-  margin: 5px;
-  cursor: pointer;
-  font-size: 16px;
-}
+    .start { background: #4f46e5; color: white; }
+    .secondary { background: #6b7280; color: white; }
+    .success { background: #16a34a; color: white; }
+    .danger { background: #b91c1c; color: white; }
 
-.start { background: #4f46e5; color: white; }
-.secondary { background: #6b7280; color: white; }
-.success { background: #16a34a; color: white; }
-.danger { background: #b91c1c; color: white; }
+    .status {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 12px;
+      min-height: 24px;
+      font-weight: bold;
+    }
 
-.status {
-  margin-top: 12px;
-  padding: 10px;
-  border-radius: 10px;
-  min-height: 24px;
-  font-weight: bold;
-}
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-top: 18px;
+    }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  margin-top: 16px;
-}
+    .box {
+      padding: 12px 10px;
+      border-radius: 12px;
+      background: #d9dce2;
+      font-weight: bold;
+      font-size: 18px;
+    }
 
-.box {
-  padding: 10px;
-  border-radius: 10px;
-  background: #ddd;
-  font-weight: bold;
-}
+    .found {
+      background: #86efac;
+    }
 
-.found {
-  background: #86efac;
-}
+    .instructions {
+      text-align: left;
+      max-width: 520px;
+      margin: 18px auto;
+      line-height: 1.5;
+    }
 
-.instructions {
-  text-align: left;
-  max-width: 500px;
-  margin: 16px auto;
-  line-height: 1.5;
-}
+    .instructions li {
+      margin-bottom: 8px;
+    }
 
-.instructions li {
-  margin-bottom: 8px;
-}
+    .notice {
+      background: #eef2ff;
+      color: #3730a3;
+      padding: 14px;
+      border-radius: 12px;
+      margin-top: 14px;
+      font-size: 16px;
+    }
 
-.notice {
-  background: #eef2ff;
-  color: #3730a3;
-  padding: 12px;
-  border-radius: 12px;
-  margin-top: 14px;
-}
+    .warning {
+      background: #fff7ed;
+      color: #9a3412;
+      padding: 14px;
+      border-radius: 12px;
+      margin-top: 14px;
+      font-weight: bold;
+      font-size: 16px;
+    }
 
-.warning {
-  background: #fff7ed;
-  color: #9a3412;
-  padding: 14px;
-  border-radius: 12px;
-  margin-top: 14px;
-  font-weight: bold;
-}
+    .winner-title {
+      font-size: 34px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
 
-.big-finish {
-  font-size: 26px;
-  font-weight: bold;
-  margin-bottom: 10px;
-}
+    .winner-subtitle {
+      font-size: 22px;
+      margin-bottom: 14px;
+    }
 
-.code-box {
-  margin: 18px auto 10px;
-  padding: 14px 18px;
-  max-width: 320px;
-  border: 2px dashed #a16207;
-  border-radius: 16px;
-  font-size: 24px;
-  font-weight: bold;
-  letter-spacing: 1px;
-  background: #fefce8;
-  color: #854d0e;
-}
-</style>
+    .code-box {
+      margin: 20px auto 12px;
+      padding: 16px 18px;
+      max-width: 360px;
+      border: 3px dashed #a16207;
+      border-radius: 18px;
+      font-size: 34px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      background: #fefce8;
+      color: #854d0e;
+    }
+
+    .progress-pill {
+      display: inline-block;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: #eff1f5;
+      font-weight: bold;
+      font-size: 20px;
+      margin-bottom: 14px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    #winnerPanel {
+      margin-top: 24px;
+      padding-top: 10px;
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="card" id="startScreen">
-  <h1>📍 Scavenger Hunt</h1>
-  <p>Find checkpoint QR codes and claim them in any order.</p>
+  <div class="card" id="startScreen">
+    <h1>📍 Scavenger Hunt</h1>
+    <p>Find checkpoint QR codes and claim them in any order.</p>
 
-  <div class="instructions">
-    <strong>How to Play:</strong>
-    <ul>
-      <li>Scan the main game QR code to open the hunt.</li>
-      <li>Walk around and find checkpoint QR codes.</li>
-      <li>Each checkpoint QR loads a checkpoint number automatically.</li>
-      <li>Tap <strong>Claim Checkpoint</strong> to record it.</li>
-      <li>Each checkpoint only counts once on the same device.</li>
-      <li>When all 12 are found, show the completion screen to staff.</li>
-    </ul>
+    <div class="instructions">
+      <strong>How to Play:</strong>
+      <ul>
+        <li>Open the main game link or scan the main QR code to begin.</li>
+        <li>Walk around and find checkpoint QR codes.</li>
+        <li>Each checkpoint QR loads its checkpoint automatically.</li>
+        <li>Tap <strong>Claim Checkpoint</strong> to record it.</li>
+        <li>Each checkpoint only counts once on the same device.</li>
+        <li>When all 12 are found, show your completion screen to staff.</li>
+      </ul>
+    </div>
+
+    <button class="start" onclick="start()">Start Hunt</button>
+    <button class="danger" onclick="resetProgress()">Reset Progress</button>
+
+    <div class="notice">
+      Progress stays on this device for 24 hours unless you reset it sooner.
+    </div>
   </div>
 
-  <button class="start" onclick="start()">Start Hunt</button>
-  <button class="danger" onclick="reset()">Reset Progress</button>
+  <div class="card hidden" id="huntScreen">
+    <div id="normalPanel">
+      <div class="progress-pill" id="progress">0 of 12 found</div>
 
-  <div class="notice">
-    Progress stays on this device for 24 hours unless you reset it sooner.
-  </div>
-</div>
+      <h2>Checkpoint Hunt</h2>
 
-<div class="card" id="huntScreen" style="display:none;">
-  <h2 id="progress">0 of 12 found</h2>
+      <p id="checkpointText">Scan a checkpoint QR code to load the checkpoint number for this location.</p>
 
-  <p id="checkpointText">Scan a checkpoint QR code</p>
+      <div class="notice">
+        Find a checkpoint QR, scan it, then tap <strong>Claim Checkpoint</strong>.
+      </div>
 
-  <div class="notice">
-    Find a checkpoint QR, scan it, then tap <strong>Claim Checkpoint</strong>.
-  </div>
+      <button class="success" onclick="claimCheckpoint()">Claim Checkpoint</button>
+      <button class="secondary" onclick="home()">Return to Start</button>
 
-  <button class="success" onclick="claim()">Claim Checkpoint</button>
-  <button class="secondary" onclick="home()">Return to Start</button>
+      <div id="status" class="status"></div>
 
-  <div id="status" class="status"></div>
+      <div id="grid" class="grid"></div>
+    </div>
 
-  <div id="grid" class="grid"></div>
-</div>
+    <div id="winnerPanel" class="hidden">
+      <div class="winner-title">🏆 WINNER VERIFIED</div>
+      <div class="winner-subtitle">You completed all 12 checkpoints.</div>
 
-<div class="card" id="doneScreen" style="display:none;">
-  <div class="big-finish">🎉 Hunt Complete</div>
-  <p>You found all 12 checkpoints.</p>
+      <div class="code-box">COMPLETE</div>
 
-  <div class="code-box">COMPLETE</div>
+      <div class="notice">
+        📸 <strong>Take a screenshot of this screen</strong><br>
+        This is your proof of completion.
+      </div>
 
-  <div class="notice">
-    Please show this screen to staff so they can confirm you finished.
-  </div>
+      <div class="notice">
+        🎁 Show your screenshot to staff to claim your reward.
+      </div>
 
-  <div class="warning">
-    Do not tap reset until staff has seen this screen.
-  </div>
+      <div class="warning">
+        ⚠️ Do not reset until staff has seen your screen.
+      </div>
 
-  <button class="secondary" onclick="home()">Return to Start</button>
-  <button class="danger" onclick="reset()">Reset Progress</button>
-</div>
-
-<script>
-const TOTAL = 12;
-const KEY = "hunt";
-const EXP = "hunt_exp";
-
-let found = [];
-let current = null;
-
-function load() {
-  const exp = localStorage.getItem(EXP);
-  if (!exp || Date.now() > Number(exp)) {
-    localStorage.removeItem(KEY);
-    localStorage.removeItem(EXP);
-    return [];
-  }
-  return JSON.parse(localStorage.getItem(KEY) || "[]");
-}
-
-function save() {
-  localStorage.setItem(KEY, JSON.stringify(found));
-  localStorage.setItem(EXP, String(Date.now() + 24 * 60 * 60 * 1000));
-}
-
-function reset() {
-  if (!confirm("Reset progress on this device?")) return;
-  localStorage.removeItem(KEY);
-  localStorage.removeItem(EXP);
-  found = [];
-  render();
-  home();
-}
-
-function start() {
-  read();
-  show("huntScreen");
-}
-
-function home() {
-  show("startScreen");
-}
-
-function show(id) {
-  document.getElementById("startScreen").style.display = "none";
-  document.getElementById("huntScreen").style.display = "none";
-  document.getElementById("doneScreen").style.display = "none";
-  document.getElementById(id).style.display = "block";
-}
-
-function read() {
-  const p = new URLSearchParams(window.location.search);
-  const c = p.get("checkpoint");
-
-  if (c) {
-    current = c;
-    document.getElementById("checkpointText").innerText = "Checkpoint " + c + " loaded";
-  } else {
-    current = null;
-    document.getElementById("checkpointText").innerText = "Scan a checkpoint QR code";
-  }
-}
-
-function claim() {
-  if (!current) {
-    setStatus("Scan a checkpoint first", "#b91c1c");
-    return;
-  }
-
-  if (found.includes(current)) {
-    setStatus("Checkpoint " + current + " was already found", "#b91c1c");
-    return;
-  }
-
-  found.push(current);
-  save();
-  render();
-  setStatus("Checkpoint " + current + " added", "#166534");
-
-  if (found.length === TOTAL) {
-    show("doneScreen");
-  }
-}
-
-function render() {
-  document.getElementById("progress").innerText =
-    found.length + " of " + TOTAL + " found";
-
-  const grid = document.getElementById("grid");
-  grid.innerHTML = "";
-
-  for (let i = 1; i <= TOTAL; i++) {
-    const d = document.createElement("div");
-    d.className = "box";
-    if (found.includes(String(i))) d.classList.add("found");
-    d.innerText = found.includes(String(i)) ? "✓ " + i : i;
-    grid.appendChild(d);
-  }
-}
-
-function setStatus(text, color) {
-  const el = document.getElementById("status");
-  el.innerText = text;
-  el.style.color = color;
-}
-
-found = load();
-render();
-</script>
-
-  <div class="card" id="doneScreen" style="display:none;">
-
-  <div style="font-size:28px; font-weight:bold; margin-bottom:10px;">
-    🏆 WINNER VERIFIED
+      <div style="margin-top:18px;">
+        <button class="secondary" onclick="home()">Return to Start</button>
+        <button class="danger" onclick="resetProgress()">Reset Progress</button>
+      </div>
+    </div>
   </div>
 
-  <p style="font-size:18px;">
-    You completed all 12 checkpoints.
-  </p>
+  <script>
+    const TOTAL = 12;
+    const KEY = "hunt";
+    const EXP = "hunt_exp";
+    const EXPIRY_MS = 24 * 60 * 60 * 1000;
 
-  <div class="code-box">QUEST-12</div>
+    let found = [];
+    let currentCheckpoint = null;
 
-  <div class="notice">
-    📸 <strong>Take a screenshot of this screen</strong><br>
-    This is your proof of completion.
-  </div>
+    function loadProgress() {
+      const exp = localStorage.getItem(EXP);
 
-  <div class="notice">
-    🎁 Show your screenshot to staff to claim your reward.
-  </div>
+      if (!exp || Date.now() > Number(exp)) {
+        localStorage.removeItem(KEY);
+        localStorage.removeItem(EXP);
+        return [];
+      }
 
-  <div class="warning">
-    ⚠️ Do not reset until staff has seen your screen.
-  </div>
+      try {
+        return JSON.parse(localStorage.getItem(KEY) || "[]");
+      } catch (e) {
+        localStorage.removeItem(KEY);
+        localStorage.removeItem(EXP);
+        return [];
+      }
+    }
 
-  <button class="secondary" onclick="home()">Return to Start</button>
-  <button class="danger" onclick="reset()">Reset Progress</button>
+    function saveProgress() {
+      localStorage.setItem(KEY, JSON.stringify(found));
+      localStorage.setItem(EXP, String(Date.now() + EXPIRY_MS));
+    }
 
-</div>
+    function resetProgress() {
+      if (!confirm("Reset progress on this device?")) return;
+
+      localStorage.removeItem(KEY);
+      localStorage.removeItem(EXP);
+      found = [];
+      currentCheckpoint = null;
+      render();
+      home();
+    }
+
+    function showScreen(screenId) {
+      document.getElementById("startScreen").classList.add("hidden");
+      document.getElementById("huntScreen").classList.add("hidden");
+
+      document.getElementById(screenId).classList.remove("hidden");
+    }
+
+    function home() {
+      showScreen("startScreen");
+    }
+
+    function start() {
+      readCheckpointFromUrl();
+      render();
+      showScreen("huntScreen");
+    }
+
+    function readCheckpointFromUrl() {
+      const params = new URLSearchParams(window.location.search);
+      const checkpoint = params.get("checkpoint");
+
+      if (checkpoint && Number(checkpoint) >= 1 && Number(checkpoint) <= TOTAL) {
+        currentCheckpoint = String(Number(checkpoint));
+        document.getElementById("checkpointText").innerText =
+          "Checkpoint " + currentCheckpoint + " loaded";
+      } else {
+        currentCheckpoint = null;
+        document.getElementById("checkpointText").innerText =
+          "Scan a checkpoint QR code to load the checkpoint number for this location.";
+      }
+    }
+
+    function setStatus(text, color) {
+      const el = document.getElementById("status");
+      el.innerText = text;
+      el.style.color = color;
+    }
+
+    function claimCheckpoint() {
+      if (!currentCheckpoint) {
+        setStatus("Scan a checkpoint first.", "#b91c1c");
+        return;
+      }
+
+      if (found.includes(currentCheckpoint)) {
+        setStatus("Checkpoint " + currentCheckpoint + " was already found.", "#b91c1c");
+        return;
+      }
+
+      found.push(currentCheckpoint);
+      found.sort((a, b) => Number(a) - Number(b));
+      saveProgress();
+      render();
+
+      if (found.length < TOTAL) {
+        setStatus("Checkpoint " + currentCheckpoint + " added.", "#166534");
+      }
+    }
+
+    function render() {
+      document.getElementById("progress").innerText =
+        found.length + " of " + TOTAL + " found";
+
+      const grid = document.getElementById("grid");
+      grid.innerHTML = "";
+
+      for (let i = 1; i <= TOTAL; i++) {
+        const div = document.createElement("div");
+        div.className = "box";
+
+        if (found.includes(String(i))) {
+          div.classList.add("found");
+          div.innerText = "✓ " + i;
+        } else {
+          div.innerText = i;
+        }
+
+        grid.appendChild(div);
+      }
+
+      if (found.length === TOTAL) {
+        document.getElementById("normalPanel").classList.add("hidden");
+        document.getElementById("winnerPanel").classList.remove("hidden");
+      } else {
+        document.getElementById("normalPanel").classList.remove("hidden");
+        document.getElementById("winnerPanel").classList.add("hidden");
+      }
+    }
+
+    found = loadProgress();
+    render();
+  </script>
+
 </body>
 </html>
