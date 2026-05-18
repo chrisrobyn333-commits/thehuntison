@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Scavenger Hunt</title>
+
+  <title>The Hunt Is On</title>
 
   <style>
     body {
@@ -24,6 +25,10 @@
       box-shadow: 0 4px 16px rgba(0,0,0,0.08);
     }
 
+    h1, h2, h3 {
+      margin-top: 0;
+    }
+
     button {
       padding: 12px 16px;
       border: none;
@@ -33,10 +38,25 @@
       font-size: 16px;
     }
 
-    .start { background: #4f46e5; color: white; }
-    .secondary { background: #6b7280; color: white; }
-    .success { background: #16a34a; color: white; }
-    .danger { background: #b91c1c; color: white; }
+    .start {
+      background: #4f46e5;
+      color: white;
+    }
+
+    .secondary {
+      background: #6b7280;
+      color: white;
+    }
+
+    .success {
+      background: #16a34a;
+      color: white;
+    }
+
+    .danger {
+      background: #b91c1c;
+      color: white;
+    }
 
     .status {
       margin-top: 12px;
@@ -88,16 +108,6 @@
       font-size: 16px;
     }
 
-    .successNotice {
-      background: #ecfdf5;
-      color: #166534;
-      padding: 16px;
-      border-radius: 14px;
-      margin-top: 14px;
-      font-size: 18px;
-      font-weight: bold;
-    }
-
     .warning {
       background: #fff7ed;
       color: #9a3412;
@@ -143,6 +153,7 @@
 
     summary {
       cursor: pointer;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -150,7 +161,7 @@
 <body>
 
   <div class="card" id="startScreen">
-    <h1>📍 Scavenger Hunt</h1>
+    <h1>📍 The Hunt Is On</h1>
     <p id="startSubtitle">Find checkpoint QR codes and claim them in any order.</p>
 
     <div class="progress-pill" id="startProgress">0 of 12 claimed</div>
@@ -158,9 +169,9 @@
     <div class="instructions">
       <strong>Quick Start:</strong>
       <ol>
-        <li>Scan a checkpoint QR code.</li>
+        <li>Scan any checkpoint QR code with your phone camera.</li>
         <li>Tap <strong>Claim Checkpoint</strong>.</li>
-        <li>Keep hunting until all 12 are claimed.</li>
+        <li>Keep hunting until all 12 checkpoints are claimed.</li>
       </ol>
     </div>
 
@@ -186,7 +197,7 @@
       <h2>Checkpoint Hunt</h2>
 
       <p id="checkpointText">
-        Scan a checkpoint QR code with your camera to load a checkpoint.
+        Scan a checkpoint QR code with your phone camera to load a checkpoint.
       </p>
 
       <div id="loadedBox" class="notice hidden"></div>
@@ -195,16 +206,20 @@
         Claim Checkpoint
       </button>
 
-      <button class="start" onclick="continueHunt()">
-        Continue Hunt
-      </button>
-
       <div id="status" class="status">
         Find and scan a checkpoint QR code to continue.
       </div>
 
       <h3>Checkpoints Claimed</h3>
       <div id="grid" class="grid"></div>
+
+      <details>
+        <summary>Need to restart?</summary>
+        <div class="warning">
+          Reset only if staff says to restart or if this device is starting a new game.
+        </div>
+        <button class="danger" onclick="resetProgress()">Reset Progress</button>
+      </details>
     </div>
 
     <div id="winnerPanel" class="hidden">
@@ -231,7 +246,15 @@
         ⚠️ Do not reset until staff has seen this screen.
       </div>
 
-      <button class="secondary" onclick="home()">Return to Start</button>
+      <button class="secondary" onclick="home()">View Main Screen</button>
+
+      <details>
+        <summary>Need to restart?</summary>
+        <div class="warning">
+          Reset only after staff has seen the completion screen.
+        </div>
+        <button class="danger" onclick="resetProgress()">Reset Progress</button>
+      </details>
     </div>
   </div>
 
@@ -296,20 +319,6 @@
       showScreen("huntScreen");
     }
 
-    function continueHunt() {
-      currentCheckpoint = null;
-      clearCheckpointFromUrl();
-
-      document.getElementById("checkpointText").innerText =
-        "Scan the next checkpoint QR code with your camera.";
-
-      document.getElementById("loadedBox").classList.add("hidden");
-      setStatus("Keep hunting. Scan the next checkpoint QR code.", "info");
-
-      render();
-      showScreen("huntScreen");
-    }
-
     function clearCheckpointFromUrl() {
       const cleanUrl = window.location.origin + window.location.pathname;
       window.history.replaceState({}, document.title, cleanUrl);
@@ -332,7 +341,7 @@
         currentCheckpoint = null;
 
         document.getElementById("checkpointText").innerText =
-          "Scan a checkpoint QR code with your camera to load a checkpoint.";
+          "Scan a checkpoint QR code with your phone camera to load a checkpoint.";
 
         document.getElementById("loadedBox").classList.add("hidden");
       }
@@ -361,28 +370,36 @@
       }
 
       if (found.includes(currentCheckpoint)) {
-        setStatus("Checkpoint " + currentCheckpoint + " was already claimed. Continue hunting.", "bad");
+        setStatus("Checkpoint " + currentCheckpoint + " was already claimed. Go find another checkpoint QR code.", "bad");
+        currentCheckpoint = null;
+        clearCheckpointFromUrl();
+        render();
         return;
       }
 
       found.push(currentCheckpoint);
       found.sort((a, b) => Number(a) - Number(b));
       saveProgress();
-      render();
 
       if (found.length === TOTAL) {
         setStatus("All checkpoints claimed!", "good");
+        currentCheckpoint = null;
+        clearCheckpointFromUrl();
         render();
         return;
       }
 
-      setStatus("✅ Checkpoint " + currentCheckpoint + " claimed! Scan the next QR code to continue.", "good");
+      setStatus("✅ Checkpoint " + currentCheckpoint + " claimed! Now go find and scan the next checkpoint QR code.", "good");
+
+      document.getElementById("checkpointText").innerText =
+        "Checkpoint claimed. Keep hunting.";
 
       document.getElementById("loadedBox").innerText =
         "Checkpoint " + currentCheckpoint + " claimed.";
 
       currentCheckpoint = null;
       clearCheckpointFromUrl();
+      render();
     }
 
     function render() {
